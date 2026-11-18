@@ -1,4 +1,4 @@
-customer_name = input("Enter Customer Name: ")
+customer_name = input("Enter Customer Name: "
 customer_type = input("Enter Customer Type (R/C): ").upper()
 
 previous_meter_reading = int(input("Enter Previous Meter Reading: "))
