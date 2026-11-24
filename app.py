@@ -1,89 +1,81 @@
-customer_name = input("Enter Customer Name: ")
-customer_type = input("Enter Customer Type (R/C): ").upper()
+name = input("Enter customer name: ")
+customer_type = input("Enter customer type (R = Residential, C = Commercial): ").upper()
+previous_reading = int(input("Enter previous meter reading: "))
+current_reading = int(input("Enter current meter reading: "))
+paid_late = input("Was the bill paid after the due date? (Y/N): ").upper()
 
-previous_meter_reading = int(input("Enter Previous Meter Reading: "))
-current_meter_reading = int(input("Enter Current Meter Reading: "))
+if customer_type != "R" and customer_type != "C":
+    print("Error: Invalid customer type. Please enter R (Residential) or C (Commercial).")
 
-paid_after_due_date = input("Paid After Due Date? (Y/N): ").upper()
-
-if customer_type != 'R' and customer_type != 'C':
-    print("Error: Invalid Customer Type.")
-    exit()
-
-if previous_meter_reading < 0 or current_meter_reading < 0:
+elif previous_reading < 0 or current_reading < 0:
     print("Error: Meter readings cannot be negative.")
-    exit()
 
-if current_meter_reading < previous_meter_reading:
-    print("Error: Current reading cannot be less than previous reading.")
-    exit()
+elif current_reading < previous_reading:
+    print("Error: Current reading cannot be less than the previous reading.")
 
-if paid_after_due_date != 'Y' and paid_after_due_date != 'N':
-    print("Error: Invalid payment status.")
-    exit()
+else:
+    units = current_reading - previous_reading
 
-units_consumed = current_meter_reading - previous_meter_reading
+    if customer_type == "R":
+        if units <= 100:
+            energy = units * 10
 
-if customer_type == 'C':
-    energy_charges = units_consumed * 30
-    fixed_charges = 500
+        elif units <= 200:
+            energy = (100 * 10) + (units - 100) * 15
 
-elif customer_type == 'R':
-    if units_consumed <= 100:
-        energy_charges = units_consumed * 10
-        fixed_charges = 100
+        elif units <= 300:
+            energy = (100 * 10) + (100 * 15) + (units - 200) * 20
 
-    elif units_consumed <= 200:
-        remaining_units = units_consumed - 100
-        energy_charges = (100 * 10) + (remaining_units * 15)
-        fixed_charges = 100
-
-    elif units_consumed <= 300:
-        remaining_units = units_consumed - 200
-        energy_charges = (100 * 10) + (100 * 15) + (remaining_units * 20)
-        fixed_charges = 200
+        else:
+            energy = (100 * 10) + (100 * 15) + (100 * 20) + (units - 300) * 25
 
     else:
-        remaining_units = units_consumed - 300
-        energy_charges = (100 * 10) + (100 * 15) + (100 * 20) + (remaining_units * 25)
-        fixed_charges = 200
+        energy = units * 30
 
-if units_consumed <= 100:
-    consumption_level = "Low"
-elif units_consumed <= 300:
-    consumption_level = "Moderate"
-else:
-    consumption_level = "High"
+    if customer_type == "R":
+        if units <= 200:
+            fixed = 100
+        else:
+            fixed = 200
 
-total_before_gst = energy_charges + fixed_charges
-gst_amount = total_before_gst * 0.18
+    else:
+        fixed = 500
 
-total_before_surcharge = total_before_gst + gst_amount
+    gst = 0.18 * (energy + fixed)
 
-if paid_after_due_date == 'Y':
-    late_payment_surcharge = total_before_surcharge * 0.10
-else:
-    late_payment_surcharge = 0
+    if paid_late == "Y":
+        surcharge = 0.10 * (energy + fixed + gst)
+    else:
+        surcharge = 0
 
-total_payable = total_before_surcharge + late_payment_surcharge
+    total = energy + fixed + gst + surcharge
 
-print("\n========== ELECTRICITY BILL ==========")
-print(f"Customer Name: {customer_name}")
+    if units <= 100:
+        level = "Low"
 
-if customer_type == 'R':
-    print("Customer Type: Residential")
-else:
-    print("Customer Type: Commercial")
+    elif units <= 300:
+        level = "Moderate"
 
-print(f"Previous Meter Reading: {previous_meter_reading}")
-print(f"Current Meter Reading: {current_meter_reading}")
-print(f"Units Consumed: {units_consumed}")
-print("--------------------------------------")
-print(f"Energy Charges: Rs {energy_charges:.2f}")
-print(f"Fixed Charges: Rs {fixed_charges:.2f}")
-print(f"GST (18%): Rs {gst_amount:.2f}")
-print(f"Late Payment Surcharge: Rs {late_payment_surcharge:.2f}")
-print("--------------------------------------")
-print(f"Total Payable: Rs {total_payable:.2f}")
-print(f"Consumption Level: {consumption_level}")
-print("======================================")
+    else:
+        level = "High"
+
+    if customer_type == "R":
+        type_name = "Residential"
+    else:
+        type_name = "Commercial"
+
+    print("\n==================================================")
+    print("                 ELECTRICITY BILL")
+    print("==================================================")
+    print(f"Customer Name      : {name}")
+    print(f"Customer Type      : {type_name}")
+    print(f"Units Consumed     : {units}")
+    print("--------------------------------------------------")
+    print(f"Energy Charges    : Rs {energy:.2f}")
+    print(f"Fixed Charge      : Rs {fixed:.2f}")
+    print(f"GST (18%)         : Rs {gst:.2f}")
+    print(f"Late Surcharge    : Rs {surcharge:.2f}")
+    print("--------------------------------------------------")
+    print(f"TOTAL PAYABLE     : Rs {total:.2f}")
+    print(f"Consumption Level : {level}")
+    print("==================================================")
